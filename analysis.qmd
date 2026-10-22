@@ -1,0 +1,69 @@
+---
+title: "Exploring Storms"
+author: "kiyareuh"
+format: html
+execute:
+  echo: false
+---
+#| cache: true
+```{r}
+#| label: setup
+#| message: false
+
+library(tidyverse)
+```
+
+```{r}
+#| label: storms-plot
+
+# Filter to the three main storm types and count unique storms per year and type
+storms |>
+  filter(status %in% c("tropical depression", "tropical storm", "hurricane")) |>
+  mutate(status = factor(status, levels = c("tropical depression", "tropical storm", "hurricane"))) |>
+  distinct(year, name, status) |>
+  count(year, status) |>
+  ggplot(aes(x = year, y = n, fill = status)) +
+  geom_area() +
+  scale_fill_manual(
+    values = c(
+      "tropical depression" = "lightblue",
+      "tropical storm" = "orange",
+      "hurricane" = "darkred"
+    )
+  ) +
+  labs(
+    title = "Atlantic Storms per Year by Type",
+    subtitle = "Source: NOAA Atlantic hurricane database (dplyr::storms)",
+    x = "Year",
+    y = "Number of Storms",
+    fill = "Storm Type"
+  ) +
+  theme_minimal()
+```
+
+## Observations by storm status
+
+```{r}
+#| label: storms-by-status
+
+storms_recent <- storms |>
+  filter(year >= 2000) |>
+  select(year, name, status, wind, pressure)
+```
+
+```{r}
+#| label: pressure-vs-wind
+
+# Plot pressure vs. wind colored by storm status, with alpha for overlapping points
+storms_recent |>
+  ggplot(aes(x = wind, y = pressure, color = status)) +
+  geom_point(alpha = 0.4) +
+  labs(
+    title = "Higher Wind Speeds Correspond to Lower Air Pressure in Atlantic Storms",
+    subtitle = "Storm observations from 2000 to present, colored by storm classification",
+    x = "Wind Speed (knots)",
+    y = "Air Pressure (millibars)",
+    color = "Storm Status"
+  ) +
+  theme_minimal()
+```

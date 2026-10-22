@@ -1,0 +1,11 @@
+# R temporary and session files
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+
+# Quarto cache and rendered output
+/.quarto/
+*_files/
+*_cache/
+*.html
